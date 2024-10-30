@@ -10,6 +10,7 @@ import java.util.List;
 
 import db.DB;
 import db.DbException;
+import db.DbIntegrityException;
 import model.dao.DepartmentDao;
 import model.entities.Department;
 
@@ -50,14 +51,41 @@ public class DepartmentDaoJDBC implements DepartmentDao{
 
 	@Override
 	public void update(Department obj) {
-		// TODO Auto-generated method stub
-		
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement("UPDATE department SET Name = ? WHERE Id = ?");
+			
+			st.setString(1, obj.getName());
+			st.setInt(2, obj.getId());
+			
+			st.executeUpdate();
+		} catch (SQLException e ) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(st);
+		}
 	}
 
 	@Override
 	public void deleteById(Integer id) {
-		// TODO Auto-generated method stub
-		
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement("DELETE FROM department WHERE Id = ?");
+			
+			st.setInt(1, id);
+			
+			int rows = st.executeUpdate();
+			
+			if (rows == 0) {
+				throw new DbIntegrityException("Id does not exist! Rows affected (0)");
+			}
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} catch (DbIntegrityException e1) {
+			throw new DbException(e1.getMessage());
+		} finally {
+			DB.closeStatement(st);
+		}
 	}
 
 	@Override
@@ -109,7 +137,5 @@ public class DepartmentDaoJDBC implements DepartmentDao{
 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
-		
 	}
-	
 }

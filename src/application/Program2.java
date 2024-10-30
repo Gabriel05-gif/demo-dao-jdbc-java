@@ -2,6 +2,7 @@ package application;
 
 import java.util.List;
 
+import db.DB;
 import model.dao.DaoFactory;
 import model.dao.DepartmentDao;
 import model.entities.Department;
@@ -21,5 +22,11 @@ public class Program2 {
 		for (Department list : departmentList) {
 			System.out.println(list);
 		}
+		
+		System.out.println("\n===== TEST 3: seller insert =====");
+		Department newDepartment = new Department(null, "Music");
+		departmentDao.insert(newDepartment);
+		System.out.println("Inserted! new id = " + newDepartment.getId());
+		DB.closeConnection();
 	}
 }
